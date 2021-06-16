@@ -1,0 +1,26 @@
+.btn-mainpage {
+    background: #403866;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: "30vw";
+    height: 62px;
+    padding: 20px 20px;
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-mainpage:hover {
+    transition: all .4s;
+    border: 1px solid #403866;
+    cursor: pointer;
+    background: white;
+    color: #403866;
+}
+
+.buttons-container{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
+}

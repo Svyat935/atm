@@ -1,0 +1,53 @@
+.btn-mainpage {
+    background: #403866;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: "30vw";
+    height: 62px;
+    padding: 20px 20px;
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-mainpage:hover {
+    transition: all .4s;
+    border: 1px solid #403866;
+    cursor: pointer;
+    background: white;
+    color: #403866;
+}
+
+.buttons-container{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.my_header{
+    background: #e9e9e9;
+    height: 100%;
+}
+
+.input-data-mask{
+    font: inherit;
+    border: 0;
+    height: 1.1876em;
+    display: block;
+    padding: 6px 0 7px;
+    min-width: 0;
+    background: none;
+    box-sizing: content-box;
+    animation-name: mui-auto-fill-cancel;
+    letter-spacing: inherit;
+    animation-duration: 10ms;
+    margin: 8px;
+    width: 20vw;
+    border-bottom: 1px rgba(0, 0, 0, 0.54) solid;
+}
+
+.input-data-mask:hover{
+    border-color: black;
+    border-width: 2px;
+}
