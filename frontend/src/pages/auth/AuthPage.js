@@ -76,10 +76,6 @@ export const AuthPage = () => {
                     <div className={"form"}>
                         <input type={"text"} id={"username"} className="input-username" placeholder={"Логин"}/>
                         <input type={"text"} id={"password"} className="input-password" placeholder={"Пароль"}/>
-                        <div className="settings">
-                            <input type="checkbox" checked={true} id="remember_me"/>
-                            <label htmlFor="remember_me">Запомнить меня.</label>
-                        </div>
                         <button className={"btn"} onClick={() => handleAuthorization()}>АВТОРИЗОВАТЬСЯ</button>
                         <button className={"btn"} onClick={() => handleToRegistration()}>К РЕГИСТРАЦИИ</button>
                     </div>
