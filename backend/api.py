@@ -4,17 +4,17 @@ from sqlalchemy.exc import IntegrityError
 
 from auth.auth import register_user, authorization_user, parse_jwt, create_admin
 from query.create_csv_file import create_csv_file
-from query.get_tech import get_records
+from query.get_game import get_records
 from query.get_users_for_admin import get_users_for_admin, user_updates
-from query.insert import insert_new_tech
-from query.delete import delete_tech
-from query.update import update_tech
+from query.insert import insert_new_game
+from query.delete import delete_game
+from query.update import update_game
 from auth.query import FormAuthentication, FormRegistration
-from query.tech import FormTechniqueList, DeleteFormTechnique, UpdateFormTechniqueList, FormUser, UpdateUser
+from query.game import FormTechniqueList, DeleteFormTechnique, UpdateFormTechniqueList, FormUser, UpdateUser
 from flask_pydantic import validate
 
 from database.connect import Base, engine, create_session
-from database.models import User, Technique, TechniqueInfo
+from database.models import User, Games, Statistics
 
 app = Flask(__name__)
 
@@ -42,18 +42,18 @@ def authentication(body: FormAuthentication):
 def get_techs(body: FormUser):
     payload = parse_jwt(body.token)
     if payload:
-        techs = get_records(payload.get("user_id"))
-        return Response(status=200, response=dumps(techs))
+        games = get_records(payload.get("user_id"))
+        return Response(status=200, response=dumps(games))
     return Response(status=401)
 
 
 @app.route('/insert_tech', methods=["POST"])
 @validate()
-def insert_tech(body: FormTechniqueList):
+def insert_game(body: FormTechniqueList):
     payload = parse_jwt(body.token)
     if payload:
         try:
-            insert_new_tech(payload.get("user_id"), body.data)
+            insert_new_game(payload.get("user_id"), body.data)
         except IntegrityError:
             return Response(status=500, response=dumps({"result": "Дубликат ключа. Пожалуйста проверьте поле."}))
         return Response(status=200, response=dumps({"result": "Техника добавлена"}))
@@ -65,7 +65,7 @@ def insert_tech(body: FormTechniqueList):
 def delete(body: DeleteFormTechnique):
     payload = parse_jwt(body.token)
     if payload:
-        delete_tech(payload.get("user_id"), body.data)
+        delete_game(payload.get("user_id"), body.data)
         return Response(status=200, response=dumps({"result": "It's ok! Technique has gone"}))
     return Response(status=401)
 
@@ -75,22 +75,11 @@ def delete(body: DeleteFormTechnique):
 def update(body: UpdateFormTechniqueList):
     payload = parse_jwt(body.token)
     if payload:
-        updating = update_tech(payload.get("user_id"), body.data)
+        updating = update_game(payload.get("user_id"), body.data)
     if updating:
         return Response(status=200, response=dumps({"result": "It's ok! Fully updated!"}))
     return Response(status=401, response=dumps({"result": "Всё плохо"}))
 
-
-@app.route("/create_csv", methods=["POST"])
-@validate()
-def csv_file(body: FormTechniqueList):
-    payload = parse_jwt(body.token)
-    if payload:
-        response = make_response(create_csv_file(body.data))
-        response.headers['Content-disposition'] = "attachment; filename=summary.csv"
-        response.mimetype = 'text/csv'
-        return response
-    return Response(status=401)
 
 
 @app.route("/get_users", methods=["POST"])

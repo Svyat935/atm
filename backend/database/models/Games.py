@@ -4,19 +4,18 @@ from database.connect import Base, create_session
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 
-class Technique(Base):
-    __tablename__ = "technique"
+class Games(Base):
+    __tablename__ = "games"
 
     id = Column(Integer, primary_key=True)
-    number = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("User", back_populates="technique")
-    tech_info = relationship("TechniqueInfo", back_populates="tech")
+    name = Column(String)
     type = Column(String)
+    description = Column(String)
     status = Column(String)
+    statistics = relationship("Statistics", back_populates="game")
 
     def __repr__(self):
-        return f"<Technique(id:{self.id}, user_id:{self.user_id})>"
+        return f"<Games(id:{self.id}, user_id:{self.user_id})>"
 
     def create(self):
         with create_session() as db:

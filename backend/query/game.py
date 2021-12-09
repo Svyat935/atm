@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator, ValidationError
-from database.models.Technique import Technique
+from database.models.Games import Games
 from typing import List, Optional
 
 

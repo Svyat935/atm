@@ -11,9 +11,8 @@ class User(Base):
     password = Column(String)
     email = Column(String)
     login = Column(String)
-    # 0 - admin, 1 - user
+    # 0 - admin, 1 - user(patient), 2 - tutor
     rights = Column(Integer)
-    technique = relationship("Technique", back_populates="user")
 
     def __repr__(self):
         return f"<User(id:{self.id}, login:{self.login}, email:{self.email}, password:{self.password})>"
