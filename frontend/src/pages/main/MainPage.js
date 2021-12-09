@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from "react";
 import "./MainPage.css";
 import {useHistory} from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -18,14 +19,6 @@ import {
     useGridApiRef
 } from "@material-ui/data-grid";
 import {AuthContext} from "../auth/AuthContext";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import TextField from "@material-ui/core/TextField";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import MenuIcon from '@material-ui/icons/Menu';
 
 function validateData(data) {
     const re = /^\d{2}.\d.{2}\d{4}$/;
@@ -47,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 function CustomToolbar() {
     return (
         <GridToolbarContainer>
-            <GridToolbarExport/>
+
         </GridToolbarContainer>
     );
 }
@@ -89,48 +82,21 @@ export function MainPage() {
             flex: 0.05,
             renderCell: (params) => {
                 const onClick = () => {
-                    setOpenDialog(true);
-                    setStatusDialogMenu(true);
-                    const data = params.row;
-
-                    setNumber(data["number"]);
-                    setStatus(data["status"]);
-                    setType(data["type"]);
-                    setDescription(data["description"]);
-                    setAudience(data["audience"]);
-                    setBuilding(data["building"]);
-                    setAddress(data["address"]);
-
-                    let string_data = data["delivery_data"].split(".");
-                    let date = string_data[2] + "-" + string_data[1] + "-" + string_data[0];
-
-                    setDeliveryData(date);
-
-                    setCurrentNumber(data['number']);
+                    history.push("/game");
                 };
 
                 return (
                     <IconButton onClick={onClick}>
-                        <MenuIcon/>
+                        <PlayArrowIcon/>
                     </IconButton>
                 )
             }
         },
-        {field: 'number', headerClassName: "my_header", headerName: 'Номер', flex: 0.14},
-        {field: 'status', headerClassName: "my_header", headerName: 'Статус', flex: 0.14, editable: true},
-        {field: "type", headerClassName: "my_header", headerName: "Тип", flex: 0.14, editable: true},
-        {field: "description", headerClassName: "my_header", headerName: "Описание", flex: 0.14, editable: true},
-        {field: "audience", headerClassName: "my_header", headerName: "Аудитория", flex: 0.14, editable: true},
-        {field: "building", headerClassName: "my_header", headerName: "Корпус", flex: 0.14, editable: true},
-        {field: "address", headerClassName: "my_header", headerName: "Адрес", flex: 0.14, editable: true},
-        {
-            field: "delivery_data",
-            headerClassName: "my_header",
-            type: 'date',
-            headerName: "Дата",
-            flex: 0.12,
-            editable: true
-        },
+        {field: 'number', headerClassName: "my_header", headerName: 'Номер Игры', flex: 0.14},
+        {field: 'name', headerClassName: "my_header", headerName: 'Название Игры', flex: 0.14},
+        {field: 'status', headerClassName: "my_header", headerName: 'Статус', flex: 0.14, },
+        {field: "type", headerClassName: "my_header", headerName: "Тип", flex: 0.14, },
+        {field: "description", headerClassName: "my_header", headerName: "Описание", flex: 0.14,},
     ];
 
     const handleUpdateDialog = async () => {
@@ -360,21 +326,6 @@ export function MainPage() {
         }
     }
 
-    const create_csv = async (objs) => {
-        let token = JSON.parse(localStorage.getItem("localData"))["token"];
-        let response = await fetch("/create_csv", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                token: token,
-                data: objs
-            })
-        });
-        return response
-    }
-
     const update_techs = async (objs) => {
         let token = JSON.parse(localStorage.getItem("localData"))["token"];
         let response = await fetch("/update_tech", {
@@ -438,16 +389,14 @@ export function MainPage() {
             let updateRows = [];
             let index = 1;
             response.forEach((row) => {
+                console.log(row)
                 updateRows.push({
                     id: index,
-                    number: row["number"],
+                    number: index,
+                    name: row["name"],
                     status: row["status"],
                     type: row["type"],
                     description: row["description"],
-                    audience: row["audience"],
-                    building: row["building"],
-                    address: row["address"],
-                    delivery_data: row["delivery_data"],
                 });
                 index++;
             })
@@ -503,152 +452,13 @@ export function MainPage() {
                     pageSize={pageSize}
                     onPageSizeChange={handlePageSizeChange}
                     onRowSelected={handleRowSelection}
-                    components={{
-                        Toolbar: CustomToolbar,
-                    }}
+
                     rowsPerPageOptions={[5, 10, 25, 50, 100]}
                     onEditCellChangeCommitted={(e) => handleUpdate(e)}
                     checkboxSelection
                     disableSelectionOnClick
                 />
             </div>
-            <div className={"buttons-container"}>
-                <button className={"btn-mainpage"} onClick={() => handleOpenDialog()}>Добавить запись</button>
-                <button className={"btn-mainpage"} onClick={() => handlePurge()}>Удалить записи</button>
-            </div>
-            <Dialog fullWidth={true} maxWidth={"lg"} open={openDialog} onClose={handleCloseOpenDialog}
-                    aria-labelledby="max-width-dialog-title">
-                <DialogTitle id="max-width-dialog-title">{statusDialogMenu ? "Запись." : "Добавить запись."}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description2">
-                        {message}
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="number"
-                        label="Номер"
-                        value={number}
-                        onChange={(event) => {
-                            setNumber(event.target.value);
-                        }}
-                        required={true}
-                        multiline={true}
-                        inputRef={refNumber}
-                        style={{margin: 8, width: "20vw"}}
-                        disabled={statusDialogMenu ? true : false}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="status"
-                        label="Статус"
-                        value={status}
-                        onChange={(event) => {
-                            setStatus(event.target.value);
-                        }}
-                        required={true}
-                        multiline={true}
-                        inputRef={refStatus}
-                        style={{margin: 8, width: "20vw"}}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="type"
-                        label="Тип"
-                        value={type}
-                        onChange={(event) => {
-                            setType(event.target.value);
-                        }}
-                        required={true}
-                        inputRef={refType}
-                        width="30vw"
-                        multiline={true}
-                        style={{margin: 8, width: "20vw"}}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="description"
-                        label="Описание"
-                        value={description}
-                        onChange={(event) => {
-                            setDescription(event.target.value);
-                        }}
-                        fullWidth={true}
-                        style={{margin: 8}}
-                        multiline={true}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="audience"
-                        label="Аудитория"
-                        value={audience}
-                        onChange={(event) => {
-                            setAudience(event.target.value);
-                        }}
-                        multiline={true}
-                        style={{margin: 8, width: "20vw"}}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="building"
-                        label="Корпус"
-                        value={building}
-                        onChange={(event) => {
-                            setBuilding(event.target.value);
-                        }}
-                        multiline={true}
-                        style={{margin: 8, width: "20vw"}}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="address"
-                        label="Адрес"
-                        value={address}
-                        onChange={(event) => {
-                            setAddress(event.target.value);
-                        }}
-                        multiline={true}
-                        style={{margin: 8, width: "20vw"}}
-                    />
-                    <TextField
-                        id="deliver_data"
-                        label="Дата"
-                        type="date"
-                        value={delivery_data}
-                        onChange={(event) => {
-                            if(event.target.valueAsDate > new Date()){
-                                let date = new Date();
-                                let month = date.getMonth() + 1;
-                                month = month < 10 ? "0" + month : month;
-                                let day = date.getDate();
-                                day = day < 10 ? "0" + day : day;
-
-                                let date_string = date.getFullYear() + "-" + month + "-" + day;
-                                setDeliveryData(date_string);
-                            }else{
-                                setDeliveryData(event.target.value);
-                            }
-                        }}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <button className={"btn-mainpage"} onClick={() => handleCloseOpenDialog()}>Отмена</button>
-                    {
-                        statusDialogMenu ?
-                        <button className={"btn-mainpage"} onClick={() => handleUpdateDialog()}>Изменить</button> :
-                        <button className={"btn-mainpage"} onClick={() => handleInsert()}>Добавить</button>
-                    }
-                </DialogActions>
-            </Dialog>
         </div>
     )
 }

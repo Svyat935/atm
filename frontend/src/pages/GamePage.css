@@ -1,0 +1,15 @@
+#wrap{
+    display: flex;
+    justify-content: center;
+}
+#table{
+    border: black 1px solid;
+    display: flex;
+}
+.cell{
+    height: 10px;
+    width: 10px;
+}
+.black{background: black;}
+.white{background: white;}
+.red{background: red;}

@@ -4,6 +4,7 @@ import {AuthPage} from "./pages/auth/AuthPage";
 import {MainPage} from "./pages/main/MainPage";
 import {RegPage} from "./pages/register/RegPage";
 import {AdminPage} from "./pages/adminpage/AdminPage";
+import {Game} from "./pages/game";
 
 
 export const useRoutes = (isAuth) => {
@@ -20,6 +21,9 @@ export const useRoutes = (isAuth) => {
     if (isAuth === 1){
         return (
             <Switch>
+                <Route path="/game">
+                    <Game/>
+                </Route>
                 <Route exact path="/">
                     <MainPage/>
                 </Route>
