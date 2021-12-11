@@ -72,7 +72,7 @@ function keyPush(evt) {
 }
 
 
-export function Game() {
+export function Game2() {
     useEffect(() => {
         canv = document.getElementById("gc");
         if (canv != null) {
@@ -84,8 +84,7 @@ export function Game() {
 
     return (
         <div id="wrap">
-            <iframe src="https://60b9-185-7-86-34.ngrok.io/1" width="600" height="800"></iframe>
-            {/*<canvas id="gc" width="400" height="400"></canvas>*/}
+            <canvas id="gc" width="400" height="400"></canvas>
         </div>
 
     )

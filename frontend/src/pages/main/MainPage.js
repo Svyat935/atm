@@ -82,7 +82,11 @@ export function MainPage() {
             flex: 0.05,
             renderCell: (params) => {
                 const onClick = () => {
-                    history.push("/game");
+                    if (params["row"]["id"] == 1){
+                        history.push("/game2");
+                    } else if (params["row"]["id"] == 2){
+                        history.push("/game");
+                    }
                 };
 
                 return (
