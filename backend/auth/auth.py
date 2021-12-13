@@ -17,14 +17,18 @@ def create_admin() -> None:
             user = User(
                 email="root@root.com",
                 login="root",
-                password=bcrypt.hashpw(password="root".encode(), salt=bcrypt.gensalt()).decode(),
-                rights=0
+                password=bcrypt.hashpw(
+                    password="root".encode(), salt=bcrypt.gensalt()
+                ).decode(),
+                rights=0,
             )
             user.create()
 
 
 def register_user(body: FormRegistration) -> None:
-    password: str = bcrypt.hashpw(password=body.password.encode(), salt=bcrypt.gensalt()).decode()
+    password: str = bcrypt.hashpw(
+        password=body.password.encode(), salt=bcrypt.gensalt()
+    ).decode()
     user: User = User(
         email=body.email,
         login=body.login,
@@ -39,7 +43,9 @@ def authorization_user(body: FormAuthentication) -> Optional[str]:
         if user_found:
             if bcrypt.checkpw(body.password.encode(), user_found.password.encode()):
                 token = jwt.encode(
-                    payload={"exp": JWT_EXPIRE, "user_id": user_found.id}, key=JWT_KEY, algorithm="HS256"
+                    payload={"exp": JWT_EXPIRE, "user_id": user_found.id},
+                    key=JWT_KEY,
+                    algorithm="HS256",
                 )
                 return (token, user_found.rights)
     return None

@@ -12,8 +12,14 @@ from query.game import FormTechnique
 def delete_game(user_id, body):
     with create_session() as db:
         for number in body:
-            techs_abs = db.query(Games).filter(Games.number == number, Games.user_id == user_id)
-            techs = db.query(Games).filter(Games.number == number, Games.user_id == user_id).all()
+            techs_abs = db.query(Games).filter(
+                Games.number == number, Games.user_id == user_id
+            )
+            techs = (
+                db.query(Games)
+                .filter(Games.number == number, Games.user_id == user_id)
+                .all()
+            )
             for tech in techs:
                 db.query(Statistics).filter(Statistics.game_id == tech.id).delete()
             techs_abs.delete()

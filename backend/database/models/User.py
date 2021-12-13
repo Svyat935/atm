@@ -13,6 +13,10 @@ class User(Base):
     login = Column(String)
     # 0 - admin, 1 - user(patient), 2 - tutor
     rights = Column(Integer)
+    # If user is patient.
+    user_id = Column(Integer)
+
+    userGame = relationship("UserAndGame", back_populates="user")
 
     def __repr__(self):
         return f"<User(id:{self.id}, login:{self.login}, email:{self.email}, password:{self.password})>"

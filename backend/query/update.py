@@ -14,7 +14,11 @@ from query.game import UpdateFormTechnique
 def update_game(user_id, body) -> bool:
     with create_session() as db:
         for queue in body:
-            tech = db.query(Games).filter(Games.number == queue.number, Games.user_id == user_id).first()
+            tech = (
+                db.query(Games)
+                .filter(Games.number == queue.number, Games.user_id == user_id)
+                .first()
+            )
             if tech is None:
                 return False
             if queue.delivery_data > datetime.now().timestamp():
@@ -23,7 +27,9 @@ def update_game(user_id, body) -> bool:
             tech.number = queue.number
             tech.status = queue.status
 
-            tech_info = db.query(Statistics).filter(Statistics.game_id == tech.id).first()
+            tech_info = (
+                db.query(Statistics).filter(Statistics.game_id == tech.id).first()
+            )
             tech_info.audience = queue.audience
             tech_info.building = queue.building
             tech_info.address = queue.address

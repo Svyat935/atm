@@ -11,7 +11,7 @@ class FormRegistration(BaseModel):
     login: str
     password: str
 
-    @validator('email')
+    @validator("email")
     def check_email(cls, variable):
         regex = r"^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$"
         if not re.search(regex, variable):
@@ -22,7 +22,7 @@ class FormRegistration(BaseModel):
                 raise ValueError("Такая электронная почта существует! Измените почту!")
         return variable
 
-    @validator('login')
+    @validator("login")
     def check_login(cls, variable):
         with create_session() as db:
             user = db.query(User).filter(User.login == variable).first()

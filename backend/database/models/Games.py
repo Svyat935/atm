@@ -13,6 +13,9 @@ class Games(Base):
     description = Column(String)
     status = Column(String)
     statistics = relationship("Statistics", back_populates="game")
+    link = Column(String)
+
+    userGame = relationship("UserAndGame", back_populates="game")
 
     def __repr__(self):
         return f"<Games(id:{self.id}, user_id:{self.user_id})>"

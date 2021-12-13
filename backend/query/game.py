@@ -4,14 +4,10 @@ from typing import List, Optional
 
 
 class FormTechnique(BaseModel):
+    name: str
     type: str
-    number: str
-    audience: str
-    building: str
-    address: str
     description: str
     status: str
-    delivery_data: int
 
 
 class DeleteFormTechnique(BaseModel):
@@ -44,6 +40,22 @@ class FormUser(BaseModel):
     token: str
 
 
+class UserType(BaseModel):
+    status: int
+    id: str
+    link_user: Optional[int]
+
+
 class UpdateUser(BaseModel):
     token: str
-    ids: List[str]
+    users: List[UserType]
+
+
+class GameForLink(BaseModel):
+    id_game: int
+
+
+class UserToLink(BaseModel):
+    token: str
+    user_id: int
+    games: List[GameForLink]

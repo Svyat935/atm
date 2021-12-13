@@ -8,22 +8,30 @@ from flask import Response
 from database.connect import create_session
 from database.models.Games import Games
 from database.models.Statistics import Statistics
-from query.game import FormTechniqueList, FormTechnique
+from database.models.UserAndGame import UserAndGame
+from query.game import FormTechniqueList, FormTechnique, UserToLink
 
 
-def insert_new_game(user_id, body: List[FormTechnique]) -> None:
+def insert_new_game(body: List[FormTechnique]) -> None:
     for queue in body:
-        new_tech: Games = Games(
-            user_id=user_id,
+        Games(
             type=queue.type,
-            number=queue.number,
+            description=queue.description,
             status=queue.status,
+            name=queue.name,
         ).create()
-        Statistics(
-            tech_id=new_tech.id,
-            audience=queue.audience,
-            building=queue.building,
-            address=queue.address,
-            description=queue.address,
-            delivery_data=datetime.fromtimestamp(queue.delivery_data)
-        ).create()
+
+
+def insert_game_to_user(body: UserToLink) -> None:
+    with create_session() as db:
+        user_games: List[UserAndGame] = db.query(UserAndGame).filter(UserAndGame.id_user == body.user_id).all()
+        if user_games:
+            for user_game in user_games:
+                db.delete(user_game)
+                db.commit()
+        for game_ in body.games:
+            UserAndGame(
+                id_game=game_.id_game,
+                id_user=body.user_id
+            ).create()
+            db.commit()
