@@ -10,7 +10,7 @@ from query.delete import delete_game
 from query.update import update_game
 from auth.query import FormAuthentication, FormRegistration
 from query.game import (
-    FormTechniqueList,
+    FormGamesList,
     DeleteFormTechnique,
     UpdateFormTechniqueList,
     FormUser,
@@ -56,7 +56,7 @@ def get_techs(body: FormUser):
 
 @app.route("/insert_tech", methods=["POST"])
 @validate()
-def insert_game(body: FormTechniqueList):
+def insert_game(body: FormGamesList):
     payload = parse_jwt(body.token)
     if payload:
         try:

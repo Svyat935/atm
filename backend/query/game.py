@@ -3,7 +3,7 @@ from database.models.Games import Games
 from typing import List, Optional
 
 
-class FormTechnique(BaseModel):
+class FormGame(BaseModel):
     name: str
     type: str
     description: str
@@ -31,9 +31,9 @@ class UpdateFormTechniqueList(BaseModel):
     data: List[UpdateFormTechnique]
 
 
-class FormTechniqueList(BaseModel):
+class FormGamesList(BaseModel):
     token: str
-    data: List[FormTechnique]
+    data: List[FormGame]
 
 
 class FormUser(BaseModel):

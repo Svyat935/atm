@@ -32,12 +32,22 @@ const columns = [
     {field: "rights", headerName: "RIGHTS", width: 170,}
 ];
 
+const columns2 = [
+    {field: 'id', headerName: 'id', width: 170,},
+    {field: 'name', headerName: 'name', width: 170,},
+    {field: 'type', headerName: 'type', width: 170,},
+    {field: "description", headerName: "description", width: 170,},
+    {field: "status", headerName: "status", width: 170}
+];
+
 export function AdminPage() {
     const history = useHistory();
     const auth = useContext(AuthContext);
     const classes = useStyles();
     const [rows, setRows] = React.useState([]);
+    const [rowsGames, setRowsGames] = React.useState([]);
     const [deletedRows, setDeletedRows] = React.useState([]);
+    const [deletedRowsGames, setDeletedRowsGames] = React.useState([]);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -45,17 +55,26 @@ export function AdminPage() {
         setDeletedRows([...deletedRows, ...rows.filter((r) => r.id === e.data.id)]);
     };
 
-    const handlePurge = async () => {
+    const handleRowGamesSelection = (e) => {
+        setDeletedRowsGames([...deletedRowsGames, ...rowsGames.filter((r) => r.id === e.data.id)])
+    }
+
+    const handleUpdatePatient = async () => {
         let ids = []
         let new_update_rows = []
         deletedRows.forEach((row) => {
-            if (!row["rights"] && row["rights"] != 0) {
-                ids.push(row["id"]);
+            let right = 1;
+
+            if (row["rights"] && row["rights"] != 0) {
+                ids.push({
+                    id: row["id"],
+                    status: right,
+                });
                 new_update_rows.push({
                     "id": row["id"],
                     "email": row["email"],
                     "login": row["login"],
-                    "rights": 1
+                    "rights": right
                 })
             }
         });
@@ -67,18 +86,98 @@ export function AdminPage() {
             },
             body: JSON.stringify({
                 token: token,
-                ids: ids
+                users: ids
             })
         });
 
         let new_ids = {}
-        ids.forEach((id_) => {
-            new_ids[id_] = 1
+        ids.forEach((obj) => {
+            new_ids[obj["id"]] = 1
         })
         let new_list_rows = [...new_update_rows, ...rows.filter((r) => !(r["id"] in new_ids))];
         console.log(...rows.filter((r) => !(r["id"] in ids)));
         setRows(new_list_rows)
     };
+
+    const handleUpdateTutor = async () => {
+        let ids = []
+        let new_update_rows = []
+        deletedRows.forEach((row) => {
+            let right = 2;
+
+            if (row["rights"] && row["rights"] != 0) {
+                ids.push({
+                    id: row["id"],
+                    status: right,
+                });
+                new_update_rows.push({
+                    "id": row["id"],
+                    "email": row["email"],
+                    "login": row["login"],
+                    "rights": right
+                })
+            }
+        });
+        let token = JSON.parse(localStorage.getItem("localData"))["token"];
+        let response = await fetch("/update_user", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                token: token,
+                users: ids
+            })
+        });
+
+        let new_ids = {}
+        ids.forEach((obj) => {
+            new_ids[obj["id"]] = 1
+        })
+        let new_list_rows = [...new_update_rows, ...rows.filter((r) => !(r["id"] in new_ids))];
+        console.log(...rows.filter((r) => !(r["id"] in ids)));
+        setRows(new_list_rows)
+    }
+
+    const handleNewGame = async () => {
+        let ids = []
+        let new_update_rows = []
+        deletedRowsGames.forEach((row) => {
+            let right = 2;
+
+            if (row["rights"] && row["rights"] != 0) {
+                ids.push({
+                    id: row["id"],
+                    status: right,
+                });
+                new_update_rows.push({
+                    "id": row["id"],
+                    "email": row["email"],
+                    "login": row["login"],
+                    "rights": right
+                })
+            }
+        });
+        let token = JSON.parse(localStorage.getItem("localData"))["token"];
+        let response = await fetch("/update_tech", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                token: token,
+                users: ids
+            })
+        });
+
+        let new_ids = {}
+        ids.forEach((obj) => {
+            new_ids[obj["id"]] = 1
+        })
+        let new_list_rows = [...new_update_rows, ...rowsGames.filter((r) => !(r["id"] in new_ids))];
+        console.log(...rowsGames.filter((r) => !(r["id"] in ids)));
+        setRowsGames(new_list_rows)
+    }
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -99,19 +198,41 @@ export function AdminPage() {
                 token: token,
             })
         }).then(response => response.json());
+        let response2 = await fetch("/get_tech", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                token: token
+            })
+        }).then(response => response.json());
+
 
         let updateRows = [];
-        console.log(response);
         response.forEach((row) => {
             updateRows.push({
                 id: row["id"],
                 email: row["email"],
                 login: row["login"],
-                rights: row["rights"]
+                rights: row["rights"],
             })
         })
 
         setRows(updateRows);
+
+        updateRows = [];
+        response2.forEach((row) => {
+            updateRows.push({
+                id: row["id"],
+                name: row["name"],
+                type: row["type"],
+                description: row["description"],
+                status: row["status"]
+            })
+        })
+        console.log(updateRows);
+        setRowsGames(updateRows);
     }, []);
 
     return (
@@ -154,7 +275,8 @@ export function AdminPage() {
                     </div>
                 </Toolbar>
             </AppBar>
-            <div style={{height: "75vh", width: '100%'}}>
+            <h3 className={"title"}>Users</h3>
+            <div style={{height: "50vh", width: '100%'}}>
                 <DataGrid
                     rows={rows}
                     columns={columns}
@@ -164,7 +286,25 @@ export function AdminPage() {
                 />
             </div>
             <div className={"buttons-container"}>
-                <button className={"btn-mainpage"} onClick={() => handlePurge()}>Verify User</button>
+                <button className={"btn-mainpage"} onClick={() => handleUpdateTutor()}>Change User on Tutor role
+                </button>
+                <button className={"btn-mainpage"} onClick={() => handleUpdatePatient()}>Change User on Patient
+                    role
+                </button>
+            </div>
+            <h3 className={"title"}>Games</h3>
+            <div style={{height: "50vh", width: '100%'}}>
+                <DataGrid
+                    rows={rowsGames}
+                    columns={columns2}
+                    pageSize={10}
+                    onRowSelected={handleRowGamesSelection}
+                    checkboxSelection
+                />
+                <div className={"buttons-container"}>
+                    <button className={"btn-mainpage"} onClick={() => handleUpdateTutor()}>Add Game</button>
+                    <button className={"btn-mainpage"} onClick={() => handleUpdateTutor()}>Delete Game</button>
+                </div>
             </div>
         </div>
     )

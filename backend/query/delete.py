@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import false
 from database.connect import create_session
 from database.models.Games import Games
 from database.models.Statistics import Statistics
-from query.game import FormTechnique
+from query.game import FormGame
 
 
 def delete_game(user_id, body):

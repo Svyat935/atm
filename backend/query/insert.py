@@ -9,10 +9,10 @@ from database.connect import create_session
 from database.models.Games import Games
 from database.models.Statistics import Statistics
 from database.models.UserAndGame import UserAndGame
-from query.game import FormTechniqueList, FormTechnique, UserToLink
+from query.game import FormGamesList, FormGame, UserToLink
 
 
-def insert_new_game(body: List[FormTechnique]) -> None:
+def insert_new_game(body: List[FormGame]) -> None:
     for queue in body:
         Games(
             type=queue.type,
